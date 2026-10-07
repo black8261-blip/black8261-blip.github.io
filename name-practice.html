@@ -1,0 +1,287 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>🌈 ㄅㄆㄇ學習樂園｜兒童學習版</title><style>*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:linear-gradient(180deg,#fff7d6,#e9f7ff);color:#344054;touch-action:manipulation}button{font:inherit;border:0;cursor:pointer}.app{min-height:100vh;padding:18px;max-width:900px;margin:auto}header{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:24px;padding:14px 18px;box-shadow:0 6px 20px #0001}.logo{font-size:24px;font-weight:900}.stars{background:#fff2a8;border-radius:999px;padding:8px 14px;font-weight:900}h1{font-size:34px;text-align:center;margin:28px 0 8px}.sub{text-align:center;color:#667085;margin-bottom:24px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.card{background:#fff;border-radius:28px;padding:22px;text-align:center;box-shadow:0 8px 24px #0001;min-height:150px}.card:active{transform:scale(.97)}.emoji{font-size:52px}.card h2{margin:8px 0 4px}.card p{margin:0;color:#667085}.screen{display:none}.screen.active{display:block}.top{display:flex;align-items:center;gap:10px;margin-bottom:16px}.back{background:#fff;border-radius:15px;padding:9px 14px}.panel{background:#fff;border-radius:28px;padding:20px;box-shadow:0 8px 24px #0001}.zhuyin{font-size:100px;font-weight:900;text-align:center;margin:12px}.action{display:inline-block;background:#ffcf4a;padding:13px 22px;border-radius:18px;font-weight:900;margin:6px}#trace{width:100%;height:360px;border-radius:22px;background:#fafafa;border:3px dashed #d0d5dd;touch-action:none}.trace-wrap{position:relative}.guide{position:absolute;z-index:0;inset:0;display:flex;align-items:center;justify-content:center;font-size:230px;font-weight:900;color:#cfd6e2;opacity:.52;pointer-events:none}.trace-wrap canvas{position:relative;z-index:1;background:transparent}.choice{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}.choice button{background:#f4f7fb;border-radius:22px;padding:24px;font-size:48px;font-weight:900}.feedback{text-align:center;font-size:24px;font-weight:900;min-height:36px;margin:12px}.battle{overflow:hidden}.battle-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;background:#f7f8fa;border-radius:18px;padding:10px 12px;font-size:15px}.arena{display:flex;align-items:center;justify-content:center;gap:28px;padding:18px 4px 8px}.hero,.monster{text-align:center;min-width:110px}.hero-face,.monster-face{font-size:76px;line-height:1;transition:transform .2s}.hp{height:13px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:8px auto 5px;width:105px}.hp i{display:block;height:100%;width:100%;background:#55b96b;border-radius:99px;transition:width .35s}.monster-hp i{background:#ef6a6a}.vs{font-size:30px}.question{text-align:center;background:#fff8d6;border-radius:20px;padding:14px;font-size:20px;font-weight:900}.battle .choice button{font-size:40px;padding:18px;background:#eef5ff;box-shadow:inset 0 -4px #dbe6f5}.shake{animation:shake .35s}.battle-result{min-height:34px;text-align:center;font-size:23px;font-weight:900}@keyframes shake{25%{transform:translateX(-12px)}50%{transform:translateX(12px)}75%{transform:translateX(-7px)}}
+
+.battle .arena{position:relative;min-height:185px;overflow:hidden;background:linear-gradient(180deg,#eef9ff,#fff);border-radius:24px;margin-top:12px}
+.hero,.monster{position:relative;z-index:2}.hero-face,.monster-face{font-size:82px}
+.hero.attack{animation:heroAttack .48s ease}.monster.hit{animation:monsterHit .45s ease}.monster.attack{animation:monsterAttack .5s ease}
+.projectile{position:absolute;z-index:4;font-size:38px;left:34%;top:58%;pointer-events:none;animation:projectileFly .45s ease forwards}
+.fireball{position:absolute;z-index:4;font-size:38px;right:34%;top:58%;pointer-events:none;animation:fireballFly .45s ease forwards}
+.flash{animation:flash .28s ease}
+.levelup{animation:levelUp .7s ease}
+@keyframes heroAttack{0%{transform:translateX(0)}45%{transform:translateX(70px) scale(1.12)}100%{transform:translateX(0)}}
+@keyframes monsterAttack{0%{transform:translateX(0)}45%{transform:translateX(-70px) scale(1.12)}100%{transform:translateX(0)}}
+@keyframes monsterHit{0%{transform:translateX(0) rotate(0)}25%{transform:translateX(14px) rotate(8deg)}50%{transform:translateX(-14px) rotate(-8deg)}100%{transform:translateX(0)}}
+@keyframes projectileFly{0%{left:35%;opacity:1}100%{left:67%;opacity:0;transform:scale(1.5)}}
+@keyframes fireballFly{0%{right:35%;opacity:1}100%{right:67%;opacity:0;transform:scale(1.5)}}
+@keyframes flash{50%{filter:brightness(1.8)}}
+@keyframes levelUp{50%{transform:scale(1.35)}}
+
+
+.match-info{text-align:center;background:#fff8d6;border-radius:18px;padding:12px;margin-bottom:14px;font-size:18px}
+.match-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:650px;margin:auto}
+.match-card{aspect-ratio:1/1;border-radius:18px;background:#eef5ff;box-shadow:inset 0 -4px #dbe6f5;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;transform-style:preserve-3d;transition:.2s;user-select:none}
+.match-card:active{transform:scale(.95)}
+.match-card.flipped{background:#fff;box-shadow:0 4px 12px #00000012}
+.match-card.matched{background:#e6f8df;box-shadow:inset 0 0 0 3px #8fd17a}
+.match-card.wrong{animation:shake .3s}
+@media(max-width:520px){.match-grid{gap:8px}.match-card{font-size:30px;border-radius:14px}}
+
+@media(max-width:520px){h1{font-size:29px}.card{padding:16px;min-height:135px}.emoji{font-size:44px}#trace{height:300px}.guide{font-size:190px}}
+
+/* 手寫區修正版：Canvas 初始化、iPad/Apple Pencil 觸控與高解析度 */
+#trace{position:relative;z-index:1;display:block;cursor:crosshair;}
+
+/* ===== 姓名練習範本 ===== */
+.name-form{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin:10px 0 18px}
+.name-input{flex:1;min-width:220px;max-width:520px;border:2px solid #d0d5dd;border-radius:16px;padding:14px 16px;font-size:22px;font-weight:800;text-align:center;outline:none}
+.name-input:focus{border-color:#7c6cff;box-shadow:0 0 0 4px #7c6cff18}
+.name-hint{text-align:center;color:#667085;margin:0 0 16px}
+.name-preview{background:#f8fafc;border-radius:22px;padding:14px;overflow:auto}
+.name-sheet{background:#fff;max-width:760px;margin:auto;padding:28px 30px;box-shadow:0 4px 18px #00000010;border:1px solid #e5e7eb}
+.name-sheet-title{text-align:center;font-size:28px;font-weight:900;margin:0 0 8px;color:#222}
+.name-sheet-sub{text-align:center;color:#667085;margin-bottom:18px}
+.name-line{display:flex;gap:0;border:2px solid #222;margin-bottom:18px;min-height:116px}
+.name-demo{width:125px;min-width:125px;border-right:2px solid #222;display:flex;align-items:center;justify-content:center;font-family:"DFKai-SB","BiauKai","KaiTi",serif;font-size:88px;font-weight:400}
+.name-info{width:54px;min-width:54px;border-right:2px solid #222;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:14px;line-height:1.35}
+.name-info span{font-size:12px;color:#667085;margin-top:4px}
+.name-practice{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(2,1fr)}
+.name-cell{position:relative;min-width:54px;min-height:56px;border-left:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1;display:flex;align-items:center;justify-content:center;font-family:"DFKai-SB","BiauKai","KaiTi",serif;font-size:43px;color:#d5d9e0}
+.name-cell:nth-last-child(-n+7){border-bottom:0}
+.name-cell.trace::before,.name-cell.trace::after{content:"";position:absolute;inset:9px;border-top:1px dashed #d7dce5;transform:rotate(0deg);pointer-events:none}
+.name-cell.trace::after{border-top:0;border-left:1px dashed #d7dce5;transform:none}
+.name-cell.empty{color:transparent}
+.name-stroke{font-size:12px;color:#667085;text-align:center;margin-top:-10px;margin-bottom:16px}
+.name-actions{text-align:center}
+.name-actions .action{background:#7c6cff;color:#fff}
+.name-actions .secondary{background:#eef2ff;color:#4338ca}
+.name-cover{display:none}
+@media(max-width:600px){
+ .name-sheet{padding:18px 12px}.name-demo{width:86px;min-width:86px;font-size:62px}.name-info{width:40px;min-width:40px;font-size:11px}.name-cell{min-width:40px;min-height:46px;font-size:32px}.name-cell.trace::before,.name-cell.trace::after{inset:6px}
+}
+@media print{
+ body{background:#fff!important}.app{max-width:none;padding:0}.screen:not(#nameScreen),header{display:none!important}
+ #nameScreen{display:block!important}.top,.name-form,.name-hint,.name-actions,.name-preview{background:transparent!important;box-shadow:none!important}
+ .name-preview{padding:0;overflow:visible}.name-sheet{box-shadow:none;border:0;max-width:none;padding:0;page-break-after:always}
+ .name-sheet:last-child{page-break-after:auto}.name-sheet-title{font-size:24px}.name-line{min-height:128px}.name-demo{font-size:94px}.name-cell{font-size:47px}
+}
+</style></head><body><div class="app"><header><div class="logo">🌈 ㄅㄆㄇ學習樂園</div><div class="stars">⭐ <span id="stars">0</span></div></header><section id="home" class="screen active"><h1>一起玩、一起學注音！</h1><div class="sub">適合 iPad／Apple Pencil｜玩遊戲也能學注音</div><div class="grid"><div class="card" onclick="openScreen('nameScreen')"><div class="emoji">📝</div><h2>姓名練習範本</h2><p>輸入姓名，自動產生寫名字練習單</p></div><div class="card" onclick="openScreen('traceScreen')"><div class="emoji">✏️</div><h2>小小寫字家</h2><p>跟著虛線寫注音</p></div><div class="card" onclick="openBattle()"><div class="emoji">⚔️</div><h2>注音怪獸大戰</h2><p>答題攻擊怪獸、連勝拿星星</p></div><div class="card" onclick="openMatch()"><div class="emoji">🧩</div><h2>注音連連看</h2><p>把注音和圖片配成一對</p></div><div class="card" onclick="openScreen('balloonScreen');newQuiz()"><div class="emoji">🎈</div><h2>氣球派對</h2><p>找到正確注音</p></div><div class="card" onclick="speak('ㄅㄆㄇ')"><div class="emoji">🔊</div><h2>聽一聽</h2><p>點我聽注音</p></div></div></section><section id="matchScreen" class="screen">
+<div class="top"><button class="back" onclick="openScreen('home')">← 回首頁</button><b>🧩 注音連連看</b></div>
+<div class="panel">
+<div class="match-info">找到相同的一對：<b id="matchPairs">0</b>/6　 ⭐ <b id="matchScore">0</b></div>
+<div class="match-grid" id="matchGrid"></div>
+<div class="feedback" id="matchMsg"></div>
+<button class="action" onclick="openMatch()">🔄 重新開始</button>
+</div>
+</section>
+
+
+<section id="nameScreen" class="screen">
+ <div class="top"><button class="back" onclick="openScreen('home')">← 回首頁</button><b>📝 姓名練習範本</b></div>
+ <div class="panel">
+  <h2 style="text-align:center;margin:4px 0 8px">姓名練習範本</h2>
+  <p class="name-hint">輸入孩子的姓名，會自動把每一個中文字排成「大字示範＋描寫＋自行書寫」格式。</p>
+  <div class="name-form">
+   <input id="nameInput" class="name-input" maxlength="6" placeholder="例如：林小明" value="林小明" oninput="renderNamePractice()">
+  </div>
+  <div id="namePreview" class="name-preview"></div>
+  <div class="name-actions">
+   <button class="action" onclick="downloadNamePDF()">📄 直接下載 PDF</button><button class="action" onclick="printNamePractice()">🖨️ 瀏覽器列印</button>
+   <button class="action secondary" onclick="renderNamePractice()">🔄 重新產生</button>
+  </div>
+ </div>
+</section>
+<section id="traceScreen" class="screen"><div class="top"><button class="back" onclick="openScreen('home')">← 回首頁</button><b>✏️ 小小寫字家</b></div><div class="panel"><div class="zhuyin" id="traceChar">ㄅ</div><div class="trace-wrap"><div class="guide" id="guide">ㄅ</div><canvas id="trace"></canvas></div><div style="text-align:center"><button class="action" onclick="speak(currentChar)">🔊 聽發音</button><button class="action" onclick="clearCanvas()">🔄 重寫</button><button class="action" onclick="nextTrace()">⭐ 完成</button></div><div class="feedback" id="traceMsg"></div></div></section><section id="quizScreen" class="screen"><div class="top"><button class="back" onclick="openScreen('home')">← 回首頁</button><b>⚔️ 注音怪獸大戰</b></div><div class="panel battle"><div class="battle-head"><div>🏆 連勝 <b id="combo">0</b></div><div>❤️ 生命 <b id="lives">3</b></div><div>👾 第 <b id="round">1</b>/10 關</div><div>⚡ 攻擊會隨連勝變強</div></div><div class="arena"><div class="hero"><div class="hero-face">🦸</div><div class="hp"><i id="heroHp"></i></div><small>小勇者</small></div><div class="vs">⚡</div><div class="monster"><div id="monsterFace" class="monster-face">👹</div><div class="hp monster-hp"><i id="monsterHp"></i></div><small id="monsterName">注音怪</small></div></div><div class="question"><div>👂 聽清楚！怪獸怕哪個注音？</div><button class="action" onclick="speak(quizAnswer)">🔊 再聽一次</button></div><div class="choice" id="choices"></div><div class="feedback" id="quizMsg"></div><div id="battleResult" class="battle-result"></div></div></section><section id="balloonScreen" class="screen"><div class="top"><button class="back" onclick="openScreen('home')">← 回首頁</button><b>🎈 氣球派對</b></div><div class="panel"><div class="sub">找到聽到的注音氣球</div><div class="zhuyin">🎈</div><div style="text-align:center"><button class="action" onclick="speak(quizAnswer)">🔊 聽一聽</button></div><div class="choice" id="balloons"></div><div class="feedback" id="balloonMsg"></div></div></section></div><script>const chars=["ㄅ","ㄆ","ㄇ","ㄈ","ㄉ","ㄊ","ㄋ","ㄌ","ㄍ","ㄎ","ㄏ","ㄐ","ㄑ","ㄒ","ㄓ","ㄔ","ㄕ","ㄖ","ㄗ","ㄘ","ㄙ"];let stars=0,currentChar="ㄅ",quizAnswer="ㄅ";const starsEl=document.getElementById("stars");function openScreen(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");if(id==="traceScreen"){resizeCanvas();showTrace(currentChar)}}function addStar(){stars++;starsEl.textContent=stars}function speak(t){if("speechSynthesis"in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang="zh-TW";u.rate=.65;speechSynthesis.speak(u)}}function showTrace(c){currentChar=c;document.getElementById("traceChar").textContent=c;document.getElementById("guide").textContent=c;clearCanvas();speak(c)}function nextTrace(){addStar();document.getElementById("traceMsg").textContent="🎉 太棒了！得到 1 顆星！";setTimeout(()=>{let i=chars.indexOf(currentChar);showTrace(chars[(i+1)%chars.length]);document.getElementById("traceMsg").textContent=""},700)}function clearCanvas(){ctx.clearRect(0,0,canvas.width,canvas.height)}let battleRound=1,battleLives=3,battleCombo=0,monsterHP=100,heroHP=100;
+const monsters=[["👹","紅眼怪"],["👾","電波怪"],["🐲","注音龍"],["🦖","暴龍怪"],["🤖","機器怪"]];
+function resetBattle(){battleRound=1;battleLives=3;battleCombo=0;monsterHP=100;heroHP=100;document.getElementById("battleResult").textContent="";updateBattle();newQuiz()}
+function updateBattle(){[["combo",battleCombo],["lives",battleLives],["round",battleRound]].forEach(x=>{let e=document.getElementById(x[0]);if(e)e.textContent=x[1]});let h=document.getElementById("heroHp"),m=document.getElementById("monsterHp");if(h)h.style.width=Math.max(0,heroHP)+"%";if(m)m.style.width=Math.max(0,monsterHP)+"%";let mon=monsters[(battleRound-1)%monsters.length];document.getElementById("monsterFace").textContent=mon[0];document.getElementById("monsterName").textContent=mon[1]}
+function openBattle(){openScreen("quizScreen");resetBattle()}
+function newQuiz(){quizAnswer=chars[Math.floor(Math.random()*chars.length)];let pool=[quizAnswer];while(pool.length<4){let c=chars[Math.floor(Math.random()*chars.length)];if(!pool.includes(c))pool.push(c)}pool.sort(()=>Math.random()-.5);["choices","balloons"].forEach(id=>{let box=document.getElementById(id);if(!box)return;box.innerHTML="";pool.forEach(c=>{let b=document.createElement("button");b.textContent=c;b.onclick=()=>answer(c,id);box.appendChild(b)})});setTimeout(()=>speak(quizAnswer),250)}
+function answer(c,id){if(id!=="choices"){let msg=document.getElementById("balloonMsg");if(c===quizAnswer){addStar();msg.textContent="🎉 答對了！+1 顆星";setTimeout(()=>{msg.textContent="";newQuiz()},650)}else{msg.textContent="💪 再試一次！";speak(quizAnswer)}return}let msg=document.getElementById("quizMsg");if(c===quizAnswer){battleCombo++;let damage=Math.min(40,18+battleCombo*3);monsterHP=Math.max(0,monsterHP-damage);addStar();msg.textContent="💥 答對！你打出 "+damage+" 傷害！";let mf=document.getElementById("monsterFace");mf.classList.remove("shake");void mf.offsetWidth;mf.classList.add("shake");updateBattle();if(monsterHP<=0){addStar(3);document.getElementById("battleResult").textContent="🏆 怪獸被打倒！額外 +3 顆星！";setTimeout(()=>{if(battleRound>=10){document.getElementById("battleResult").textContent="🎉 闖關成功！10 關全部完成！";msg.textContent="🌟 小勇者今天超厲害！"}else{battleRound++;monsterHP=100;heroHP=100;msg.textContent="⚔️ 下一隻怪獸出現！";document.getElementById("battleResult").textContent="";updateBattle();setTimeout(newQuiz,450)}},850)}else{setTimeout(()=>{msg.textContent="👊 怪獸反擊！下一題！";newQuiz()},500)}}else{battleCombo=0;battleLives--;heroHP=Math.max(0,heroHP-30);msg.textContent="😵 答錯！怪獸反擊 -30 生命";let hf=document.querySelector(".hero-face");hf.classList.remove("shake");void hf.offsetWidth;hf.classList.add("shake");updateBattle();if(battleLives<=0){document.getElementById("battleResult").textContent="💪 再挑戰一次！";msg.textContent="生命用完了，聽清楚再來一次！";setTimeout(resetBattle,1000)}else{setTimeout(()=>speak(quizAnswer),400)}}}
+
+const matchPairsData=[
+ ["ㄅ","🍌"],["ㄆ","🍍"],["ㄇ","🐱"],["ㄈ","🍞"],["ㄉ","🐟"],["ㄊ","🐰"]
+];
+let matchFirst=null,matchBusy=false,matchFound=0,matchScore=0;
+function openMatch(){
+ openScreen("matchScreen");matchFirst=null;matchBusy=false;matchFound=0;matchScore=0;
+ document.getElementById("matchPairs").textContent="0";document.getElementById("matchScore").textContent="0";document.getElementById("matchMsg").textContent="";
+ let cards=[];matchPairsData.forEach((pair,i)=>{cards.push({v:pair[0],p:i,t:"z"});cards.push({v:pair[1],p:i,t:"p"})});
+ cards.sort(()=>Math.random()-.5);
+ const grid=document.getElementById("matchGrid");grid.innerHTML="";
+ cards.forEach((c,i)=>{
+   const b=document.createElement("button");b.className="match-card";b.dataset.p=c.p;b.dataset.t=c.t;b.dataset.v=c.v;b.textContent="❓";
+   b.onclick=()=>flipMatch(b);grid.appendChild(b);
+ });
+}
+function flipMatch(card){
+ if(matchBusy||card.classList.contains("flipped")||card.classList.contains("matched"))return;
+ card.classList.add("flipped");card.textContent=card.dataset.v;
+ if(card.dataset.t==="z")speak(card.dataset.v);
+ if(!matchFirst){matchFirst=card;return}
+ matchBusy=true;
+ if(matchFirst.dataset.p===card.dataset.p && matchFirst.dataset.t!==card.dataset.t){
+   setTimeout(()=>{
+     matchFirst.classList.add("matched");card.classList.add("matched");
+     matchFound++;matchScore+=10;addStar();
+     document.getElementById("matchPairs").textContent=matchFound;document.getElementById("matchScore").textContent=matchScore;
+     document.getElementById("matchMsg").textContent="🎉 配對成功！+1 顆星";
+     matchFirst=null;matchBusy=false;
+     if(matchFound===6){matchScore+=30;addStar(3);document.getElementById("matchScore").textContent=matchScore;document.getElementById("matchMsg").textContent="🏆 全部配對成功！獎勵 3 顆星！"}
+   },220);
+ }else{
+   matchFirst.classList.add("wrong");card.classList.add("wrong");
+   setTimeout(()=>{matchFirst.classList.remove("flipped","wrong");matchFirst.textContent="❓";card.classList.remove("flipped","wrong");card.textContent="❓";matchFirst=null;matchBusy=false;document.getElementById("matchMsg").textContent="💪 再找找看！"},650);
+ }
+}
+
+
+
+/* ===== 手寫 Canvas 初始化 ===== */
+const canvas=document.getElementById('trace');
+const ctx=canvas.getContext('2d');
+let drawing=false,lastX=0,lastY=0;
+function resizeCanvas(){
+  if(!canvas)return;
+  const r=canvas.getBoundingClientRect();
+  const dpr=Math.max(1,Math.min(3,window.devicePixelRatio||1));
+  const old=document.createElement('canvas');
+  old.width=canvas.width; old.height=canvas.height;
+  if(old.width&&old.height) old.getContext('2d').drawImage(canvas,0,0);
+  canvas.width=Math.max(1,Math.round(r.width*dpr));
+  canvas.height=Math.max(1,Math.round(r.height*dpr));
+  canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=10;
+  ctx.strokeStyle='#3b82f6';
+  if(old.width&&old.height) ctx.drawImage(old,0,0,old.width/dpr,old.height/dpr,0,0,r.width,r.height);
+}
+function point(e){
+  const r=canvas.getBoundingClientRect();
+  return {x:e.clientX-r.left,y:e.clientY-r.top};
+}
+function startDraw(e){
+  e.preventDefault();drawing=true;const p=point(e);lastX=p.x;lastY=p.y;
+  if(canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+  ctx.beginPath();ctx.arc(lastX,lastY,5,0,Math.PI*2);ctx.fillStyle='#3b82f6';ctx.fill();
+}
+function draw(e){
+  if(!drawing)return;e.preventDefault();const p=point(e);ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.stroke();lastX=p.x;lastY=p.y;
+}
+function endDraw(e){drawing=false;if(e&&canvas.releasePointerCapture&&canvas.hasPointerCapture?.(e.pointerId))canvas.releasePointerCapture(e.pointerId);}
+canvas.addEventListener('pointerdown',startDraw,{passive:false});
+canvas.addEventListener('pointermove',draw,{passive:false});
+canvas.addEventListener('pointerup',endDraw,{passive:false});
+canvas.addEventListener('pointercancel',endDraw,{passive:false});
+canvas.addEventListener('pointerleave',()=>{if(drawing)drawing=false});
+window.addEventListener('resize',()=>{if(document.getElementById('traceScreen').classList.contains('active'))resizeCanvas()});
+
+/* ===== 姓名練習範本功能 ===== */
+function renderNamePractice(){
+ const input=document.getElementById("nameInput");
+ const box=document.getElementById("namePreview");
+ if(!input||!box)return;
+ let name=(input.value||"").trim().replace(/\s+/g,"");
+ if(!name){box.innerHTML='<div style="text-align:center;padding:35px;color:#667085">請先輸入姓名</div>';return;}
+ const chars=[...name].slice(0,6);
+ box.innerHTML=`
+  <div class="name-sheet">
+   <h3 class="name-sheet-title">姓名練習範本</h3>
+   <div class="name-sheet-sub">姓名：${escapeName(name)}　　請沿著淡灰色字體練習，再自己寫寫看</div>
+   ${chars.map((ch,i)=>`
+    <div class="name-line">
+      <div class="name-demo">${escapeName(ch)}</div>
+      <div class="name-info"><b>第${i+1}字</b><span>大字示範</span></div>
+      <div class="name-practice">
+       ${Array.from({length:14},(_,j)=>`<div class="name-cell ${j<7?'trace':'empty'}">${j<7?escapeName(ch):''}</div>`).join("")}
+      </div>
+    </div>
+    <div class="name-stroke">✏️ 前 7 格描寫　　後 7 格自己寫</div>
+   `).join("")}
+  </div>`;
+}
+
+function pdfEscape(s){return s.replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");}
+function canvasToJpegBytes(canvas){
+ const data=canvas.toDataURL("image/jpeg",0.92).split(",")[1];
+ const bin=atob(data); const out=new Uint8Array(bin.length);
+ for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out;
+}
+function makeImagePDF(jpeg,w,h){
+ // 單頁 PDF：把瀏覽器已經正確渲染的中文練習單轉成影像，避免 PDF 字型問題。
+ const pageW=595.28,pageH=841.89; // A4 portrait points
+ const scale=Math.min(pageW/w,pageH/h);
+ const iw=w*scale, ih=h*scale, x=(pageW-iw)/2, y=(pageH-ih)/2;
+ const header=`q\n${iw.toFixed(2)} 0 0 ${ih.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ\n`;
+ const objects=[]; const offsets=[]; let pdf='%PDF-1.4\n%\xFF\xFF\xFF\xFF\n';
+ function obj(n,body){offsets[n]=pdf.length;pdf+=n+' 0 obj\n'+body+'\nendobj\n';}
+ obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+ obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+ obj(3,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+pageW+' '+pageH+'] /Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>');
+ offsets[4]=pdf.length; pdf+='4 0 obj\n<< /Length '+header.length+' >>\nstream\n'+header+'endstream\nendobj\n';
+ offsets[5]=pdf.length; pdf+='5 0 obj\n<< /Type /XObject /Subtype /Image /Width '+w+' /Height '+h+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpeg.length+' >>\nstream\n';
+ const head=pdf; const tail='\nendstream\nendobj\n';
+ // Build as binary-safe Uint8Array below rather than concatenating huge binary strings.
+ const encoder=new TextEncoder();
+ let chunks=[encoder.encode(head),jpeg,encoder.encode(tail)];
+ let bytesLen=chunks.reduce((a,b)=>a+b.length,0); let all=new Uint8Array(bytesLen); let pos=0; for(const c of chunks){all.set(c,pos);pos+=c.length;}
+ // append xref/trailer
+ let baseText=new TextDecoder().decode(all); // safe enough: JPEG bytes may decode lossily, so offsets after image are computed from byte length below.
+ let xrefOffset=all.length;
+ let xref='xref\n0 6\n0000000000 65535 f \n';
+ for(let i=1;i<=5;i++) xref+=String(offsets[i]).padStart(10,'0')+' 00000 n \n';
+ xref+='trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+xrefOffset+'\n%%EOF';
+ const xb=encoder.encode(xref); const final=new Uint8Array(all.length+xb.length);final.set(all);final.set(xb,all.length);return final;
+}
+function downloadNamePDF(){
+ const input=document.getElementById('nameInput'); const name=(input?.value||'').trim().replace(/\s+/g,'');
+ if(!name){alert('請先輸入姓名，再下載 PDF。');input?.focus();return;}
+ renderNamePractice();
+ const sheet=document.querySelector('#namePreview .name-sheet'); if(!sheet){alert('姓名練習單尚未產生，請再試一次。');return;}
+ const rect=sheet.getBoundingClientRect();
+ const canvas=document.createElement('canvas'); const dpr=2;
+ canvas.width=Math.ceil(Math.max(794,rect.width)*dpr); canvas.height=Math.ceil(Math.max(1123,rect.height)*dpr);
+ const ctx=canvas.getContext('2d'); ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ // 以 DOM 文字與格線重新繪製，避免跨瀏覽器 html2canvas 依賴。
+ const W=canvas.width,H=canvas.height, sx=W/(rect.width||794);
+ ctx.save();ctx.scale(sx,sx);ctx.fillStyle='#fff';ctx.fillRect(0,0,W/sx,H/sx);
+ ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.fillStyle='#222';ctx.font='900 28px sans-serif';ctx.fillText('姓名練習範本',(rect.width||794)/2,34);
+ ctx.fillStyle='#667085';ctx.font='16px sans-serif';ctx.fillText('姓名：'+name+'　　請沿著淡灰色字體練習，再自己寫寫看',(rect.width||794)/2,62);
+ const chars=[...name].slice(0,6); let y=92; const left=18, demoW=125, infoW=54, lineH=128, cellsW=Math.max(420,(rect.width||794)-left*2-demoW-infoW);
+ chars.forEach((ch,i)=>{
+   ctx.strokeStyle='#222';ctx.lineWidth=2;ctx.strokeRect(left,y,demoW+infoW+cellsW,lineH);
+   ctx.beginPath();ctx.moveTo(left+demoW,y);ctx.lineTo(left+demoW,y+lineH);ctx.moveTo(left+demoW+infoW,y);ctx.lineTo(left+demoW+infoW,y+lineH);ctx.stroke();
+   ctx.font='400 94px "DFKai-SB","BiauKai","KaiTi",serif';ctx.fillStyle='#222';ctx.fillText(ch,left+demoW/2,y+lineH/2);
+   ctx.font='700 14px sans-serif';ctx.fillText('第'+(i+1)+'字',left+demoW+infoW/2,y+58);ctx.font='12px sans-serif';ctx.fillStyle='#667085';ctx.fillText('大字示範',left+demoW+infoW/2,y+78);
+   const cw=cellsW/7;
+   for(let j=0;j<14;j++){
+     const cx=left+demoW+infoW+(j%7)*cw, cy=y+Math.floor(j/7)*(lineH/2);
+     ctx.strokeStyle='#cbd5e1';ctx.lineWidth=1;ctx.strokeRect(cx,cy,cw,lineH/2);
+     if(j<7){ctx.fillStyle='#d5d9e0';ctx.font='400 47px "DFKai-SB","BiauKai","KaiTi",serif';ctx.fillText(ch,cx+cw/2,cy+lineH/4);ctx.strokeStyle='#d7dce5';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(cx+8,cy+lineH/4);ctx.lineTo(cx+cw-8,cy+lineH/4);ctx.stroke();ctx.setLineDash([]);}
+   }
+   ctx.fillStyle='#667085';ctx.font='12px sans-serif';ctx.fillText('✏️ 前 7 格描寫　　後 7 格自己寫',(rect.width||794)/2,y+lineH+12);y+=lineH+32;
+ });
+ ctx.restore();
+ const jpeg=canvasToJpegBytes(canvas); const pdf=makeImagePDF(jpeg,canvas.width,canvas.height);
+ const blob=new Blob([pdf],{type:'application/pdf'}); const url=URL.createObjectURL(blob); const a=document.createElement('a');a.href=url;a.download='姓名練習範本-'+name+'.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+
+function printNamePractice(){
+  const input=document.getElementById("nameInput");
+  const name=(input?.value||"").trim();
+  if(!name){ alert("請先輸入姓名，再列印或另存 PDF。"); input?.focus(); return; }
+  // 確保姓名練習內容已更新，避免列印到舊資料。
+  renderNamePractice();
+  const oldTitle=document.title;
+  document.title="姓名練習範本 - "+name;
+  // 部分內嵌瀏覽器對同步 window.print() 不穩定，延遲到下一個事件循環。
+  setTimeout(()=>{
+    try{ window.focus(); window.print(); }
+    finally{ setTimeout(()=>{document.title=oldTitle},300); }
+  },80);
+}
+
+function escapeName(v){
+ return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+document.addEventListener("DOMContentLoaded",()=>{setTimeout(renderNamePractice,0)});
+</script></body></html>
