@@ -1,92 +1,201 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Polymarket AI Agent</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Polymarket 模擬交易系統</title>
 <style>
-:root{--bg:#0b1020;--card:#121a2d;--muted:#91a0bd;--text:#f5f7fb;--line:#24304a;--good:#35d07f;--warn:#f6c85f;--bad:#ff6b6b;--accent:#7aa2ff}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#080d19,#0e1527);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.wrap{max-width:1200px;margin:auto;padding:18px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-h1{font-size:24px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:4px}.actions{display:flex;gap:8px;flex-wrap:wrap}
-button,.select{background:#17223a;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 13px;cursor:pointer}
-button:hover{border-color:#49618f}.primary{background:#315db8;border-color:#4e79d2}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.card{background:rgba(18,26,45,.92);border:1px solid var(--line);border-radius:14px;padding:14px}.k{color:var(--muted);font-size:12px}.v{font-size:23px;font-weight:750;margin-top:5px}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
-.panel{background:rgba(18,26,45,.94);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:12px}.ph{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.ph strong{font-size:15px}
-.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:950px}th,td{padding:11px 12px;border-bottom:1px solid #202b42;text-align:left;font-size:13px;vertical-align:top}th{color:var(--muted);font-weight:600;position:sticky;top:0;background:#121a2d}.title{max-width:370px;line-height:1.35}.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700}.buy{background:rgba(53,208,127,.14);color:var(--good)}.watch{background:rgba(246,200,95,.14);color:var(--warn)}.pass{background:rgba(145,160,189,.13);color:var(--muted)}
-.bar{height:7px;background:#202b42;border-radius:99px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--accent)}
-.small{font-size:11px;color:var(--muted)}.footer{color:var(--muted);font-size:11px;padding:18px 2px}.notice{padding:11px 13px;background:#111b31;border:1px solid #263a62;border-radius:10px;color:#c9d5ef;font-size:12px;line-height:1.55}
-@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.wrap{padding:12px}.v{font-size:20px}}
+:root{--bg:#080d18;--card:#111a2c;--card2:#0d1525;--line:#26334d;--text:#f5f7fb;--muted:#8f9db8;--good:#39d98a;--warn:#f5c451;--bad:#ff6b6b;--blue:#72a0ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#070b14,#0d1628);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{max-width:1280px;margin:auto;padding:16px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:23px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:4px}.actions{display:flex;gap:7px;flex-wrap:wrap}
+button,input{font:inherit}button{background:#17243d;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px 12px;cursor:pointer}button:hover{border-color:#5572a6}.primary{background:#315db8;border-color:#4f79d0}.danger{background:#5b2630;border-color:#7d3744}
+.notice{margin-top:13px;padding:11px 13px;border:1px solid #334c78;background:#101c32;border-radius:10px;color:#cbd8f1;font-size:12px;line-height:1.55}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin:14px 0}.card{background:rgba(17,26,44,.94);border:1px solid var(--line);border-radius:12px;padding:12px}.k{font-size:11px;color:var(--muted)}.v{font-size:20px;font-weight:800;margin-top:4px}.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0;padding:12px;background:var(--card2);border:1px solid var(--line);border-radius:12px}.control{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}input[type=number]{width:72px;background:#0a1221;color:var(--text);border:1px solid var(--line);border-radius:7px;padding:7px}
+.panel{margin-top:11px;background:rgba(17,26,44,.95);border:1px solid var(--line);border-radius:12px;overflow:hidden}.ph{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.ph strong{font-size:14px}.small{font-size:11px;color:var(--muted)}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:1050px}th,td{padding:9px 10px;border-bottom:1px solid #202b41;text-align:left;font-size:12px;vertical-align:middle}th{color:var(--muted);font-weight:600;background:#111a2c;position:sticky;top:0}.title{max-width:350px;line-height:1.35}.pill{display:inline-block;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:800}.buy{background:#123d2a;color:var(--good)}.watch{background:#403616;color:var(--warn)}.pass{background:#222c3f;color:var(--muted)}.sell{background:#4a2228;color:var(--bad)}
+.bar{height:6px;background:#202b40;border-radius:99px;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:var(--blue)}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--muted);margin-right:5px}.live{background:var(--good)}
+.footer{padding:16px 2px;color:var(--muted);font-size:10px;line-height:1.6}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:650px){.grid{grid-template-columns:repeat(2,1fr)}.wrap{padding:11px}h1{font-size:20px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="top"><div><h1>🤖 Polymarket AI Agent</h1><div class="sub">V1 · 公開市場資料＋錯價掃描＋模擬交易</div></div>
-<div class="actions"><button id="refresh" class="primary">↻ 更新市場</button><button id="demo">載入示範</button></div></div>
-<div class="notice" style="margin-top:14px">目前是<strong>模擬模式</strong>。系統不會送出任何真實訂單。AI 機率目前以可解釋的市場訊號模型代替；下一階段再接新聞／LLM 與後端自動化。</div>
+<div class="top">
+ <div><h1>🤖 AI Polymarket 模擬交易系統</h1><div class="sub">V1 Simulation · 即時市場資料＋模擬 AI 機率＋風控＋虛擬下單</div></div>
+ <div class="actions"><button id="refresh" class="primary">↻ 更新市場</button><button id="trade">▶ 執行模擬策略</button><button id="reset" class="danger">重置模擬</button></div>
+</div>
+
+<div class="notice">
+ <b>目前只允許模擬交易。</b> 不會連接錢包、不會送出真實訂單、不會動用資金。
+ 目前的「AI 機率」是<strong>測試用模型</strong>，不是正式預測模型；先用來驗證交易引擎、訊號、倉位與盈虧計算。
+ 等模擬結果穩定後，再把新聞／LLM／正式預測模型接進來。
+</div>
+
 <div class="grid">
-<div class="card"><div class="k">市場數量</div><div id="markets" class="v">—</div></div>
-<div class="card"><div class="k">BUY 訊號</div><div id="buys" class="v good">—</div></div>
-<div class="card"><div class="k">WATCH</div><div id="watch" class="v warn">—</div></div>
-<div class="card"><div class="k">模擬資金</div><div id="bank" class="v">$10,000</div></div>
+ <div class="card"><div class="k">市場</div><div id="markets" class="v">—</div></div>
+ <div class="card"><div class="k">BUY</div><div id="buys" class="v good">—</div></div>
+ <div class="card"><div class="k">WATCH</div><div id="watch" class="v warn">—</div></div>
+ <div class="card"><div class="k">可用資金</div><div id="cash" class="v">$10,000</div></div>
+ <div class="card"><div class="k">總權益</div><div id="equity" class="v">$10,000</div></div>
+ <div class="card"><div class="k">模擬損益</div><div id="pnl" class="v">$0</div></div>
 </div>
-<div class="panel"><div class="ph"><strong>🎯 錯價機會</strong><span id="status" class="small">尚未更新</span></div>
-<div class="tablewrap"><table><thead><tr><th>市場</th><th>YES</th><th>模型機率</th><th>Edge</th><th>流動性</th><th>訊號</th><th>理由</th></tr></thead><tbody id="rows"></tbody></table></div></div>
-<div class="panel"><div class="ph"><strong>📒 模擬交易</strong><span class="small">V1 僅記錄，不下單</span></div>
-<div class="tablewrap"><table><thead><tr><th>時間</th><th>市場</th><th>方向</th><th>價格</th><th>倉位</th><th>狀態</th></tr></thead><tbody id="trades"><tr><td colspan="6" class="small">尚無模擬交易</td></tr></tbody></table></div></div>
-<div class="footer">資料來源：Polymarket 公開市場資料。模型結果僅供研究與回測，不代表投資建議。真正實盤前必須加入 API 金鑰、風控、滑價、費用與人工停機機制。</div>
+
+<div class="controls">
+ <div class="control">初始資金 <input id="initial" type="number" min="100" step="100" value="10000"></div>
+ <div class="control">單筆風險 <input id="risk" type="number" min="0.5" max="10" step="0.5" value="2">%</div>
+ <div class="control">最低 Edge <input id="edge" type="number" min="1" max="30" step="1" value="7">%</div>
+ <div class="control">最大持倉 <input id="maxpos" type="number" min="1" max="20" step="1" value="5">筆</div>
+ <span id="status" class="small"><span class="status-dot"></span>尚未更新</span>
 </div>
+
+<div class="panel">
+ <div class="ph"><strong>🎯 AI 模擬訊號</strong><span class="small">排序：Edge 最大優先</span></div>
+ <div class="tablewrap"><table><thead><tr><th>市場</th><th>YES</th><th>模擬 AI</th><th>Edge</th><th>流動性</th><th>訊號</th><th>理由</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
+</div>
+
+<div class="panel">
+ <div class="ph"><strong>📌 模擬持倉</strong><span class="small">依即時價格 Mark-to-Market</span></div>
+ <div class="tablewrap"><table><thead><tr><th>市場</th><th>方向</th><th>進場</th><th>現價</th><th>投入</th><th>未實現損益</th><th>狀態</th></tr></thead><tbody id="positions"></tbody></table></div>
+</div>
+
+<div class="panel">
+ <div class="ph"><strong>📒 模擬交易紀錄</strong><span class="small">只存在本機瀏覽器</span></div>
+ <div class="tablewrap"><table><thead><tr><th>時間</th><th>市場</th><th>方向</th><th>價格</th><th>金額</th><th>結果</th></tr></thead><tbody id="trades"></tbody></table></div>
+</div>
+
+<div class="footer">
+資料來源：Polymarket 公開市場資料。<br>
+V1 的模型機率只是為了測試「交易系統」而建立的可解釋測試模型，不能視為真正 AI 預測，也不能用來判斷真實獲利能力。
+正式版本會加入事件資料、新聞、LLM 評估、歷史回測、滑價、費用、停損、最大曝險與人工總開關。
+</div>
+</div>
+
 <script>
 const API='https://gamma-api.polymarket.com/markets';
 const demoData=[
-{question:'Will Bitcoin be above $100,000 at year end?',outcomePrices:'["0.46","0.54"]',volumeNum:1250000,liquidityNum:480000},
-{question:'Will the Fed cut rates at the next meeting?',outcomePrices:'["0.62","0.38"]',volumeNum:840000,liquidityNum:310000},
-{question:'Will a major AI model launch before November?',outcomePrices:'["0.31","0.69"]',volumeNum:390000,liquidityNum:120000},
-{question:'Will US inflation be below 3% next release?',outcomePrices:'["0.57","0.43"]',volumeNum:270000,liquidityNum:95000}
+ {question:'Will Bitcoin be above $100,000 at year end?',outcomePrices:'["0.46","0.54"]',volumeNum:1250000,liquidityNum:480000},
+ {question:'Will the Fed cut rates at the next meeting?',outcomePrices:'["0.62","0.38"]',volumeNum:840000,liquidityNum:310000},
+ {question:'Will a major AI model launch before November?',outcomePrices:'["0.31","0.69"]',volumeNum:390000,liquidityNum:120000},
+ {question:'Will US inflation be below 3% next release?',outcomePrices:'["0.57","0.43"]',volumeNum:270000,liquidityNum:95000},
+ {question:'Will gold finish the month above $4,000?',outcomePrices:'["0.55","0.45"]',volumeNum:620000,liquidityNum:180000}
 ];
-let data=[];
-const fmt=n=>n>=1e6?'$'+(n/1e6).toFixed(1)+'M':n>=1e3?'$'+(n/1e3).toFixed(0)+'K':'$'+Math.round(n||0);
-function score(m){
- let p=Array.isArray(m.outcomePrices)?Number(m.outcomePrices[0]):Number(JSON.parse(m.outcomePrices||'[0.5]')[0]);
- if(!isFinite(p))p=.5;
- const liq=Number(m.liquidityNum||m.liquidity||0);
- const vol=Number(m.volumeNum||m.volume||0);
- const depth=Math.min(1,Math.log10(Math.max(10,liq))/7);
+
+let data=[],positions=[],trades=[];
+let cash=10000,initial=10000;
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function priceOf(m){
+ let a=m.outcomePrices;
+ try{if(typeof a==='string')a=JSON.parse(a)}catch(e){}
+ let p=Array.isArray(a)?Number(a[0]):Number(a);
+ return isFinite(p)?Math.max(.001,Math.min(.999,p)):.5;
+}
+function model(m){
+ const p=priceOf(m),liq=Number(m.liquidityNum||m.liquidity||0),vol=Number(m.volumeNum||m.volume||0);
  const activity=Math.min(1,Math.log10(Math.max(10,vol))/7);
- // Conservative V1 prior: pull toward 50%, only flag meaningful dislocations.
- const model=Math.max(.05,Math.min(.95,.5 + (p-.5)*(0.72+0.18*activity) + (depth-.5)*.035));
- const edge=model-p;
- const signal=Math.abs(edge)>=.075 && liq>=50000 ? 'BUY' : Math.abs(edge)>=.04 ? 'WATCH':'PASS';
- const reason=signal==='BUY'?'價格與模型估值偏離，且流動性達門檻':signal==='WATCH'?'有偏離，但需要新聞/事件確認':'目前沒有足夠 Edge';
- return {m,p,model,edge,liq,vol,signal,reason};
+ const depth=Math.min(1,Math.log10(Math.max(10,liq))/7);
+ // 測試模型：向市場價格施加小幅、可解釋的偏移，僅用於驗證交易流程。
+ // 真正 AI 模型會在 V2 替換這一段。
+ let bias=(activity-.5)*.035+(depth-.5)*.025+(0.5-p)*.045;
+ const ai=Math.max(.03,Math.min(.97,p+bias));
+ const edge=ai-p;
+ const minEdge=Number($('edge').value||7)/100;
+ const signal=edge>=minEdge?'BUY':Math.abs(edge)>=minEdge*.6?'WATCH':'PASS';
+ let reason=signal==='BUY'?'測試模型估值高於市場，達到最低 Edge':signal==='WATCH'?'接近交易門檻，等待更多確認':'Edge 未達交易門檻';
+ return {m,p,ai,edge,liq,vol,signal,reason};
 }
+function scored(){return data.map(model).filter(x=>x.m.question||x.m.title).sort((a,b)=>Math.abs(b.edge)-Math.abs(a.edge)).slice(0,40)}
 function render(){
- const scored=data.map(score).filter(x=>x.m.question||x.m.title).sort((a,b)=>Math.abs(b.edge)-Math.abs(a.edge)).slice(0,30);
- document.getElementById('markets').textContent=data.length;
- document.getElementById('buys').textContent=scored.filter(x=>x.signal==='BUY').length;
- document.getElementById('watch').textContent=scored.filter(x=>x.signal==='WATCH').length;
- document.getElementById('rows').innerHTML=scored.map(x=>{
-  const title=(x.m.question||x.m.title||'未命名市場');
-  const edge=(x.edge*100).toFixed(1);
-  const cls=x.signal==='BUY'?'buy':x.signal==='WATCH'?'watch':'pass';
-  return '<tr><td class="title">'+esc(title)+'</td><td>'+Math.round(x.p*100)+'%</td><td>'+Math.round(x.model*100)+'%</td><td class="'+(x.edge>0?'good':'bad')+'">'+(x.edge>0?'+':'')+edge+'%</td><td>'+fmt(x.liq)+'<div class="bar"><i style="width:'+Math.min(100,x.liq/5000)+'%"></i></div></td><td><span class="pill '+cls+'">'+x.signal+'</span></td><td class="small">'+x.reason+'</td></tr>';
- }).join('')||'<tr><td colspan="7" class="small">沒有符合條件的市場</td></tr>';
+ const s=scored();
+ $('markets').textContent=data.length;
+ $('buys').textContent=s.filter(x=>x.signal==='BUY').length;
+ $('watch').textContent=s.filter(x=>x.signal==='WATCH').length;
+ $('rows').innerHTML=s.map((x,i)=>{
+  const title=x.m.question||x.m.title||'未命名市場', cls=x.signal==='BUY'?'buy':x.signal==='WATCH'?'watch':'pass';
+  return '<tr><td class="title">'+esc(title)+'</td><td>'+Math.round(x.p*100)+'%</td><td>'+Math.round(x.ai*100)+'%</td><td class="'+(x.edge>=0?'good':'bad')+'">'+(x.edge>=0?'+':'')+(x.edge*100).toFixed(1)+'%</td><td>'+fmt(x.liq)+'<div class="bar"><i style="width:'+Math.min(100,x.liq/5000)+'%"></i></div></td><td><span class="pill '+cls+'">'+x.signal+'</span></td><td class="small">'+x.reason+'</td><td>'+(x.signal==='BUY'?'<button onclick="openSim('+i+')">模擬買入</button>':'—')+'</td></tr>';
+ }).join('')||'<tr><td colspan="8" class="small">目前沒有市場資料</td></tr>';
+ renderPositions();
+ renderTrades();
+ updateStats();
+ window.signalCache=s;
 }
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function openSim(i){
+ const s=window.signalCache?.[i]; if(!s||s.signal!=='BUY')return;
+ const maxPos=Number($('maxpos').value||5);
+ if(positions.length>=maxPos){alert('已達最大持倉筆數');return}
+ if(positions.some(p=>p.id===idOf(s.m))){alert('此市場已有持倉');return}
+ const riskPct=Number($('risk').value||2)/100;
+ const amount=Math.min(cash,cash*riskPct*5);
+ if(amount<5){alert('可用資金不足');return}
+ cash-=amount;
+ positions.push({id:idOf(s.m),title:s.m.question||s.m.title||'未命名',side:'YES',entry:s.p,amount,opened:Date.now()});
+ trades.unshift({time:new Date(),title:s.m.question||s.m.title||'未命名',side:'BUY YES',price:s.p,amount,result:'OPEN'});
+ render();
+}
+function idOf(m){return String(m.id||m.conditionId||m.slug||m.question||m.title||Math.random())}
+function renderPositions(){
+ $('positions').innerHTML=positions.map(p=>{
+  const m=data.find(x=>idOf(x)===p.id),cur=m?priceOf(m):p.entry;
+  const shares=p.amount/p.entry, pnl=(cur-p.entry)*shares;
+  return '<tr><td class="title">'+esc(p.title)+'</td><td><span class="pill buy">YES</span></td><td>'+Math.round(p.entry*100)+'%</td><td>'+Math.round(cur*100)+'%</td><td>'+fmt(p.amount)+'</td><td class="'+(pnl>=0?'good':'bad')+'">'+(pnl>=0?'+':'')+fmt(pnl)+'</td><td><button onclick="closeSim(\''+esc(p.id).replace(/'/g,'&#39;')+'\')">平倉</button></td></tr>'
+ }).join('')||'<tr><td colspan="7" class="small">尚無持倉。按「模擬買入」建立第一筆虛擬交易。</td></tr>';
+}
+function closeSim(pid){
+ const idx=positions.findIndex(p=>p.id===pid);if(idx<0)return;
+ const p=positions[idx],m=data.find(x=>idOf(x)===pid),cur=m?priceOf(m):p.entry;
+ const proceeds=p.amount*cur/p.entry,pnl=proceeds-p.amount;
+ cash+=proceeds;positions.splice(idx,1);
+ trades.unshift({time:new Date(),title:p.title,side:'SELL YES',price:cur,amount:proceeds,result:pnl>=0?'WIN +'+fmt(pnl):'LOSS '+fmt(pnl)});
+ render();
+}
+function renderTrades(){
+ $('trades').innerHTML=trades.slice(0,30).map(t=>'<tr><td>'+new Date(t.time).toLocaleString('zh-TW')+'</td><td class="title">'+esc(t.title)+'</td><td>'+esc(t.side)+'</td><td>'+Math.round(t.price*100)+'%</td><td>'+fmt(t.amount)+'</td><td class="'+(String(t.result).startsWith('WIN')?'good':String(t.result).startsWith('LOSS')?'bad':'')+'">'+esc(t.result)+'</td></tr>').join('')||'<tr><td colspan="6" class="small">尚無交易紀錄</td></tr>';
+}
+function updateStats(){
+ let unreal=0;
+ positions.forEach(p=>{const m=data.find(x=>idOf(x)===p.id),cur=m?priceOf(m):p.entry;unreal+=(cur-p.entry)*(p.amount/p.entry)});
+ const equity=cash+positions.reduce((v,p)=>{const m=data.find(x=>idOf(x)===p.id),cur=m?priceOf(m):p.entry;return v+p.amount*cur/p.entry},0);
+ const pnl=equity-initial;
+ $('cash').textContent=fmt(cash);$('equity').textContent=fmt(equity);$('pnl').textContent=(pnl>=0?'+':'')+fmt(pnl);
+ $('pnl').className='v '+(pnl>=0?'good':'bad');$('equity').className='v '+(equity>=initial?'good':'bad');
+}
 async function load(){
- const status=document.getElementById('status'); status.textContent='抓取中…';
+ $('status').innerHTML='<span class="status-dot"></span>抓取市場中…';
  try{
-  const u=API+'?limit=100&active=true&closed=false&order=volume24hr&ascending=false';
-  const r=await fetch(u); if(!r.ok)throw Error('HTTP '+r.status);
-  const j=await r.json(); data=Array.isArray(j)?j:(j.markets||[]);
-  if(!data.length)throw Error('無市場資料');
-  status.textContent='已更新 '+new Date().toLocaleString('zh-TW');
+  const r=await fetch(API+'?limit=100&active=true&closed=false&order=volume24hr&ascending=false');
+  if(!r.ok)throw Error('HTTP '+r.status);
+  const j=await r.json();data=Array.isArray(j)?j:(j.markets||[]);
+  if(!data.length)throw Error('empty');
+  $('status').innerHTML='<span class="status-dot live"></span>市場資料已更新 '+new Date().toLocaleTimeString('zh-TW');
  }catch(e){
-  data=demoData; status.textContent='公開 API 暫時無法從瀏覽器讀取，已切換示範資料';
+  data=demoData;
+  $('status').innerHTML='<span class="status-dot"></span>API 無法讀取，使用示範市場';
  }
  render();
 }
-document.getElementById('refresh').onclick=load;
-document.getElementById('demo').onclick=()=>{data=demoData;document.getElementById('status').textContent='示範模式';render()};
+function runAuto(){
+ const max=Number($('maxpos').value||5);
+ const s=scored().filter(x=>x.signal==='BUY');
+ let n=0;
+ for(const x of s){
+  if(positions.length>=max)break;
+  if(positions.some(p=>p.id===idOf(x.m)))continue;
+  const before=positions.length;
+  openSim(window.signalCache.indexOf(x));
+  if(positions.length>before)n++;
+ }
+ $('status').innerHTML='<span class="status-dot live"></span>策略執行完成：新增 '+n+' 筆模擬持倉';
+}
+function resetSim(){
+ initial=Number($('initial').value||10000);cash=initial;positions=[];trades=[];render();
+ $('status').innerHTML='<span class="status-dot"></span>模擬帳戶已重置為 '+fmt(initial);
+}
+$('refresh').onclick=load;$('trade').onclick=runAuto;$('reset').onclick=resetSim;$('initial').onchange=resetSim;
 load();
 </script>
-</body></html>
+</body>
+</html>
