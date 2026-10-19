@@ -46,7 +46,7 @@ button,input{font:inherit}button{background:#17243d;color:var(--text);border:1px
 <div class="controls">
  <div class="control">初始資金 <input id="initial" type="number" min="100" step="100" value="10000"></div>
  <div class="control">單筆風險 <input id="risk" type="number" min="0.5" max="10" step="0.5" value="2">%</div>
- <div class="control">最低 Edge <input id="edge" type="number" min="1" max="30" step="1" value="7">%</div>
+ <div class="control">最低 Edge <input id="edge" type="number" min="1" max="30" step="1" value="1">%</div>
  <div class="control">最大持倉 <input id="maxpos" type="number" min="1" max="20" step="1" value="5">筆</div>
  <span id="status" class="small"><span class="status-dot"></span>尚未更新</span>
 </div>
@@ -106,7 +106,7 @@ function model(m){
  let bias=(activity-.5)*.035+(depth-.5)*.025+(0.5-p)*.045;
  const ai=Math.max(.03,Math.min(.97,p+bias));
  const edge=ai-p;
- const minEdge=Number($('edge').value||7)/100;
+ const minEdge=Number($('edge').value||1)/100;
  const signal=edge>=minEdge?'BUY':Math.abs(edge)>=minEdge*.6?'WATCH':'PASS';
  let reason=signal==='BUY'?'測試模型估值高於市場，達到最低 Edge':signal==='WATCH'?'接近交易門檻，等待更多確認':'Edge 未達交易門檻';
  return {m,p,ai,edge,liq,vol,signal,reason};
@@ -194,8 +194,9 @@ function runAuto(){
   openSim(i);
   if(positions.length>before)n++;
  }
- $('status').innerHTML='<span class="status-dot live"></span>策略執行完成：新增 '+n+' 筆模擬持倉';
- if(n===0)$('status').innerHTML='<span class="status-dot"></span>策略已執行，但沒有符合條件的新買入訊號';
+ const msg=n>0?'策略執行完成：新增 '+n+' 筆模擬持倉。':'策略有執行，但目前沒有符合條件的新買入訊號；請查看 BUY 數量或把最低 Edge 調低。';
+ $('status').innerHTML='<span class="status-dot '+(n>0?'live':'')+'"></span>'+msg;
+ alert(msg);
 }
 function resetSim(){
  initial=Number($('initial').value||10000);cash=initial;positions=[];trades=[];render();
