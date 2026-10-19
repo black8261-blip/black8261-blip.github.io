@@ -86,8 +86,10 @@ const demoData=[
 let data=[],positions=[],trades=[];
 let cash=10000,initial=10000;
 const $=id=>document.getElementById(id);
-const fmt=n=>'
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>'String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STORE_KEY='polymarket-sim-v1';
+function saveState(){try{localStorage.setItem(STORE_KEY,JSON.stringify({cash,initial,positions,trades}));}catch(e){}}
+function restoreState(){try{const raw=localStorage.getItem(STORE_KEY);if(!raw)return;const s=JSON.parse(raw);if(Number.isFinite(Number(s.cash)))cash=Number(s.cash);if(Number.isFinite(Number(s.initial)))initial=Number(s.initial);if(Array.isArray(s.positions))positions=s.positions;if(Array.isArray(s.trades))trades=s.trades.map(t=>({...t,time:new Date(t.time)}));$('initial').value=initial;}catch(e){}}
 function priceOf(m){
  let a=m.outcomePrices;
  try{if(typeof a==='string')a=JSON.parse(a)}catch(e){}
@@ -180,16 +182,19 @@ async function load(){
 }
 function runAuto(){
  const max=Number($('maxpos').value||5);
- const s=scored().filter(x=>x.signal==='BUY');
+ const s=window.signalCache||scored();
  let n=0;
- for(const x of s){
+ for(let i=0;i<s.length;i++){
+  const x=s[i];
+  if(x.signal!=='BUY')continue;
   if(positions.length>=max)break;
   if(positions.some(p=>p.id===idOf(x.m)))continue;
   const before=positions.length;
-  openSim(window.signalCache.indexOf(x));
+  openSim(i);
   if(positions.length>before)n++;
  }
  $('status').innerHTML='<span class="status-dot live"></span>策略執行完成：新增 '+n+' 筆模擬持倉';
+ if(n===0)$('status').innerHTML='<span class="status-dot"></span>策略已執行，但沒有符合條件的新買入訊號';
 }
 function resetSim(){
  initial=Number($('initial').value||10000);cash=initial;positions=[];trades=[];render();
@@ -199,134 +204,6 @@ $('refresh').onclick=load;$('trade').onclick=runAuto;$('reset').onclick=resetSim
 restoreState();
 load();
 setInterval(load,5*60*1000);
-</script>
-</body>
-</html>+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const STORE_KEY='polymarket-sim-v1';
-function saveState(){
- try{localStorage.setItem(STORE_KEY,JSON.stringify({cash,initial,positions,trades}));}
- catch(e){console.warn('無法保存模擬資料',e);}
-}
-function restoreState(){
- try{
-  const raw=localStorage.getItem(STORE_KEY);if(!raw)return;
-  const s=JSON.parse(raw);
-  if(Number.isFinite(Number(s.cash)))cash=Number(s.cash);
-  if(Number.isFinite(Number(s.initial)))initial=Number(s.initial);
-  if(Array.isArray(s.positions))positions=s.positions;
-  if(Array.isArray(s.trades))trades=s.trades.map(t=>({...t,time:new Date(t.time)}));
-  $('initial').value=initial;
- }catch(e){console.warn('讀取模擬資料失敗',e);}
-}
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function priceOf(m){
- let a=m.outcomePrices;
- try{if(typeof a==='string')a=JSON.parse(a)}catch(e){}
- let p=Array.isArray(a)?Number(a[0]):Number(a);
- return isFinite(p)?Math.max(.001,Math.min(.999,p)):.5;
-}
-function model(m){
- const p=priceOf(m),liq=Number(m.liquidityNum||m.liquidity||0),vol=Number(m.volumeNum||m.volume||0);
- const activity=Math.min(1,Math.log10(Math.max(10,vol))/7);
- const depth=Math.min(1,Math.log10(Math.max(10,liq))/7);
- // 測試模型：向市場價格施加小幅、可解釋的偏移，僅用於驗證交易流程。
- // 真正 AI 模型會在 V2 替換這一段。
- let bias=(activity-.5)*.035+(depth-.5)*.025+(0.5-p)*.045;
- const ai=Math.max(.03,Math.min(.97,p+bias));
- const edge=ai-p;
- const minEdge=Number($('edge').value||7)/100;
- const signal=edge>=minEdge?'BUY':Math.abs(edge)>=minEdge*.6?'WATCH':'PASS';
- let reason=signal==='BUY'?'測試模型估值高於市場，達到最低 Edge':signal==='WATCH'?'接近交易門檻，等待更多確認':'Edge 未達交易門檻';
- return {m,p,ai,edge,liq,vol,signal,reason};
-}
-function scored(){return data.map(model).filter(x=>x.m.question||x.m.title).sort((a,b)=>Math.abs(b.edge)-Math.abs(a.edge)).slice(0,40)}
-function render(){
- const s=scored();
- $('markets').textContent=data.length;
- $('buys').textContent=s.filter(x=>x.signal==='BUY').length;
- $('watch').textContent=s.filter(x=>x.signal==='WATCH').length;
- $('rows').innerHTML=s.map((x,i)=>{
-  const title=x.m.question||x.m.title||'未命名市場', cls=x.signal==='BUY'?'buy':x.signal==='WATCH'?'watch':'pass';
-  return '<tr><td class="title">'+esc(title)+'</td><td>'+Math.round(x.p*100)+'%</td><td>'+Math.round(x.ai*100)+'%</td><td class="'+(x.edge>=0?'good':'bad')+'">'+(x.edge>=0?'+':'')+(x.edge*100).toFixed(1)+'%</td><td>'+fmt(x.liq)+'<div class="bar"><i style="width:'+Math.min(100,x.liq/5000)+'%"></i></div></td><td><span class="pill '+cls+'">'+x.signal+'</span></td><td class="small">'+x.reason+'</td><td>'+(x.signal==='BUY'?'<button onclick="openSim('+i+')">模擬買入</button>':'—')+'</td></tr>';
- }).join('')||'<tr><td colspan="8" class="small">目前沒有市場資料</td></tr>';
- renderPositions();
- renderTrades();
- updateStats();
- window.signalCache=s;
-}
-function openSim(i){
- const s=window.signalCache?.[i]; if(!s||s.signal!=='BUY')return;
- const maxPos=Number($('maxpos').value||5);
- if(positions.length>=maxPos){alert('已達最大持倉筆數');return}
- if(positions.some(p=>p.id===idOf(s.m))){alert('此市場已有持倉');return}
- const riskPct=Number($('risk').value||2)/100;
- const amount=Math.min(cash,cash*riskPct*5);
- if(amount<5){alert('可用資金不足');return}
- cash-=amount;
- positions.push({id:idOf(s.m),title:s.m.question||s.m.title||'未命名',side:'YES',entry:s.p,amount,opened:Date.now()});
- trades.unshift({time:new Date(),title:s.m.question||s.m.title||'未命名',side:'BUY YES',price:s.p,amount,result:'OPEN'});
- render();
-}
-function idOf(m){return String(m.id||m.conditionId||m.slug||m.question||m.title||Math.random())}
-function renderPositions(){
- $('positions').innerHTML=positions.map(p=>{
-  const m=data.find(x=>idOf(x)===p.id),cur=m?priceOf(m):p.entry;
-  const shares=p.amount/p.entry, pnl=(cur-p.entry)*shares;
-  return '<tr><td class="title">'+esc(p.title)+'</td><td><span class="pill buy">YES</span></td><td>'+Math.round(p.entry*100)+'%</td><td>'+Math.round(cur*100)+'%</td><td>'+fmt(p.amount)+'</td><td class="'+(pnl>=0?'good':'bad')+'">'+(pnl>=0?'+':'')+fmt(pnl)+'</td><td><button onclick="closeSim(\''+esc(p.id).replace(/'/g,'&#39;')+'\')">平倉</button></td></tr>'
- }).join('')||'<tr><td colspan="7" class="small">尚無持倉。按「模擬買入」建立第一筆虛擬交易。</td></tr>';
-}
-function closeSim(pid){
- const idx=positions.findIndex(p=>p.id===pid);if(idx<0)return;
- const p=positions[idx],m=data.find(x=>idOf(x)===pid),cur=m?priceOf(m):p.entry;
- const proceeds=p.amount*cur/p.entry,pnl=proceeds-p.amount;
- cash+=proceeds;positions.splice(idx,1);
- trades.unshift({time:new Date(),title:p.title,side:'SELL YES',price:cur,amount:proceeds,result:pnl>=0?'WIN +'+fmt(pnl):'LOSS '+fmt(pnl)});
- render();
-}
-function renderTrades(){
- $('trades').innerHTML=trades.slice(0,30).map(t=>'<tr><td>'+new Date(t.time).toLocaleString('zh-TW')+'</td><td class="title">'+esc(t.title)+'</td><td>'+esc(t.side)+'</td><td>'+Math.round(t.price*100)+'%</td><td>'+fmt(t.amount)+'</td><td class="'+(String(t.result).startsWith('WIN')?'good':String(t.result).startsWith('LOSS')?'bad':'')+'">'+esc(t.result)+'</td></tr>').join('')||'<tr><td colspan="6" class="small">尚無交易紀錄</td></tr>';
-}
-function updateStats(){
- let unreal=0;
- positions.forEach(p=>{const m=data.find(x=>idOf(x)===p.id),cur=m?priceOf(m):p.entry;unreal+=(cur-p.entry)*(p.amount/p.entry)});
- const equity=cash+positions.reduce((v,p)=>{const m=data.find(x=>idOf(x)===p.id),cur=m?priceOf(m):p.entry;return v+p.amount*cur/p.entry},0);
- const pnl=equity-initial;
- $('cash').textContent=fmt(cash);$('equity').textContent=fmt(equity);$('pnl').textContent=(pnl>=0?'+':'')+fmt(pnl);
- $('pnl').className='v '+(pnl>=0?'good':'bad');$('equity').className='v '+(equity>=initial?'good':'bad');
-}
-async function load(){
- $('status').innerHTML='<span class="status-dot"></span>抓取市場中…';
- try{
-  const r=await fetch(API+'?limit=100&active=true&closed=false&order=volume24hr&ascending=false');
-  if(!r.ok)throw Error('HTTP '+r.status);
-  const j=await r.json();data=Array.isArray(j)?j:(j.markets||[]);
-  if(!data.length)throw Error('empty');
-  $('status').innerHTML='<span class="status-dot live"></span>市場資料已更新 '+new Date().toLocaleTimeString('zh-TW');
- }catch(e){
-  data=demoData;
-  $('status').innerHTML='<span class="status-dot"></span>API 無法讀取，使用示範市場';
- }
- render();
-}
-function runAuto(){
- const max=Number($('maxpos').value||5);
- const s=scored().filter(x=>x.signal==='BUY');
- let n=0;
- for(const x of s){
-  if(positions.length>=max)break;
-  if(positions.some(p=>p.id===idOf(x.m)))continue;
-  const before=positions.length;
-  openSim(window.signalCache.indexOf(x));
-  if(positions.length>before)n++;
- }
- $('status').innerHTML='<span class="status-dot live"></span>策略執行完成：新增 '+n+' 筆模擬持倉';
-}
-function resetSim(){
- initial=Number($('initial').value||10000);cash=initial;positions=[];trades=[];render();
- $('status').innerHTML='<span class="status-dot"></span>模擬帳戶已重置為 '+fmt(initial);
-}
-$('refresh').onclick=load;$('trade').onclick=runAuto;$('reset').onclick=resetSim;$('initial').onchange=resetSim;
-load();
 </script>
 </body>
 </html>
