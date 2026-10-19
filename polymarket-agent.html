@@ -86,7 +86,8 @@ const demoData=[
 let data=[],positions=[],trades=[];
 let cash=10000,initial=10000;
 const $=id=>document.getElementById(id);
-const fmt=n=>'String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const STORE_KEY='polymarket-sim-v1';
 function saveState(){try{localStorage.setItem(STORE_KEY,JSON.stringify({cash,initial,positions,trades}));}catch(e){}}
 function restoreState(){try{const raw=localStorage.getItem(STORE_KEY);if(!raw)return;const s=JSON.parse(raw);if(Number.isFinite(Number(s.cash)))cash=Number(s.cash);if(Number.isFinite(Number(s.initial)))initial=Number(s.initial);if(Array.isArray(s.positions))positions=s.positions;if(Array.isArray(s.trades))trades=s.trades.map(t=>({...t,time:new Date(t.time)}));$('initial').value=initial;}catch(e){}}
